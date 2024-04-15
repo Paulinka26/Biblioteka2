@@ -1,7 +1,6 @@
 package com.example.biblioteka2.user;
 
 import com.example.biblioteka.UserRole;
-import com.example.biblioteka2.Auth.AuthEntity;
 import jakarta.persistence.*;
 
 @Entity
