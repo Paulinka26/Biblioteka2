@@ -10,29 +10,68 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/books")
 public class BookController {
-    private BookService bookService;
+
+    private final BookService bookService;
 
     @Autowired
     public BookController(BookService bookService) {
         this.bookService = bookService;
+    }
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public class BookAlreadyExistsException extends RuntimeException {
+        public BookAlreadyExistsException(String message) {
+            super(message);
+        }
+    }
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public class BookNotFoundException extends RuntimeException {
+        public BookNotFoundException(String message) {
+            super(message);
+        }
     }
 
     @GetMapping
     public List<Book> getAllBooks() {
         return bookService.getAll();
     }
+
     @GetMapping("/{bookId}")
-    public Book getOne(@PathVariable long bookId) {
-        return bookService.getOne(bookId);
+    public ResponseEntity<?> getOne(@PathVariable long bookId) {
+        try {
+            Book book = bookService.getOne(bookId);
+            return ResponseEntity.ok(book);
+        } catch (BookNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Book not found with id: " + bookId);
+        }
     }
+
     @PostMapping
-    public ResponseEntity<Book> create (@RequestBody Book book){
-        var newBook = bookService.create(book);
-        return new ResponseEntity<>(newBook, HttpStatus.CREATED);
+    public ResponseEntity<?> create(@RequestBody Book book) {
+        try {
+            Book newBook = bookService.create(book);
+            return ResponseEntity.status(HttpStatus.CREATED).body(newBook);
+        } catch (BookAlreadyExistsException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Book already exists");
+        }
     }
+
     @DeleteMapping("/{bookId}")
     public ResponseEntity<Void> delete(@PathVariable long bookId) {
-        bookService.delete(bookId);
-        return ResponseEntity.noContent().build();
+        try {
+            bookService.delete(bookId);
+            return ResponseEntity.noContent().build();
+        } catch (BookNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @ExceptionHandler(BookAlreadyExistsException.class)
+    public ResponseEntity<String> handleBookAlreadyExistsException(BookAlreadyExistsException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+    }
+
+    @ExceptionHandler(BookNotFoundException.class)
+    public ResponseEntity<String> handleBookNotFoundException(BookNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 }

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+        .navbar {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            box-sizing: border-box;
+        }
+        .navbar__right {
+            display: flex;
+            align-items: center;
+        }
+        .navbar__item {
+            margin-left: 20px;
+            cursor: pointer;
+        }
+        .navbar__item:hover {
+            text-decoration: underline;
+        }
+        .login-form {
+            width: 300px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #fff;
+            margin-top: 20px;
+        }
+        .login-form__group {
+            margin-bottom: 10px;
+        }
+        .login-form__label {
+            display: block;
+            font-weight: bold;
+        }
+        .login-form__input {
+            width: calc(100% - 10px);
+            padding: 5px;
+            border-radius: 3px;
+            border: 1px solid #ccc;
+        }
+        .login-form__button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .login-form__button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar">
+
+    <div>
+    </div>
+    <div class="navbar__right">
+        <div class="navbar__item">Home</div>
+        <div class="navbar__item">News</div>
+        <div class="navbar__item">Contact</div>
+        <div class="navbar__item">About</div>
+    </div>
+</nav>
+<form class="login-form" action="/login" method="post">
+    <h2>Login</h2>
+    <div class="login-form__group">
+        <label class="login-form__label" for="username">Username:</label>
+        <input class="login-form__input" type="text" id="username" name="username" required>
+    </div>
+    <div class="login-form__group">
+        <label class="login-form__label" for="password">Password:</label>
+        <input class="login-form__input" type="password" id="password" name="password" required>
+    </div>
+    <button class="login-form__button" type="submit">Login</button>
+</form>
+</body>
+</html>

@@ -1,6 +1,6 @@
 package com.example.biblioteka2.user;
 
-import com.example.biblioteka.UserRole;
+import com.example.biblioteka2.UserRole;
 import jakarta.persistence.*;
 
 @Entity
@@ -27,7 +27,7 @@ public class User {
     private String password;
     @Column(name = "role", nullable = false)
     @Enumerated(EnumType.STRING)
-    private com.example.biblioteka.UserRole role;
+    private UserRole role;
 
     public long getUserId() {
         return userId;

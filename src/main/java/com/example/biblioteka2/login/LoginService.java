@@ -35,7 +35,7 @@ public class LoginService {
             long timeMills = System.currentTimeMillis();
             String token = Jwts.builder()
                     .issuedAt(new Date(timeMills))
-                    .expiration(new Date(timeMills + 5 * 60 * 1000))
+                    .expiration(new Date(timeMills + 40 * 60 * 1000))
                     .claim("id", user.getUserId())
                     .claim("userRole", user.getRole())
                     .signWith(SignatureAlgorithm.HS256, key)

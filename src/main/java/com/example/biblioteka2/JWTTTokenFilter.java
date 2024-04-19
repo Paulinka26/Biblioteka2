@@ -6,6 +6,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -17,10 +18,12 @@ import java.io.IOException;
 import java.util.List;
 
 public class JWTTTokenFilter extends OncePerRequestFilter {
+    @Value("${jwt.token.key}")
     private final String key;
     public JWTTTokenFilter(String key){
         this.key = key;
     }
+
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -31,12 +34,13 @@ public class JWTTTokenFilter extends OncePerRequestFilter {
                     .setSigningKey(key)
                     .build()
                     .parseSignedClaims(token)
-                    .getPayload();
-            String userId = (String) claims.get("id");
-            String userRole = (String) claims.get("role");
+                    .getBody();
+            String userId = ((Integer) claims.get("id")).toString();
+            String role = (String) claims.get("userRole");
+
             Authentication authentication =
                     new UsernamePasswordAuthenticationToken(userId, null,
-                            List.of(new SimpleGrantedAuthority(userRole)));
+                            List.of(new SimpleGrantedAuthority(role)));
             //Rola użytkowimka powinna by zapisana w bazie ROLE_NAZWA
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }else{

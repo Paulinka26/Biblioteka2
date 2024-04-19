@@ -3,9 +3,11 @@ package com.example.biblioteka2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,7 +16,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true) // Dodana adnotacja dla metodowego zabezpieczenia
 public class SecurityConfig {
     @Value("${jwt.token.key}")
     private String key;
@@ -22,25 +23,29 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
-                .sessionManagement(httpSecuritySessionManagementConfigurer ->
-                        httpSecuritySessionManagementConfigurer
-                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .csrf(AbstractHttpConfigurer::disable)
                 .addFilterBefore(new JWTTTokenFilter(key),
                         UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
-                                authorizationManagerRequestMatcherRegistry
-                                        .requestMatchers("/api/books").permitAll()
-                                        .requestMatchers("/api/users").permitAll()
-                                        .requestMatchers("/login").permitAll()
-                        // Tutaj możesz dodać dalsze konfiguracje
+                        authorizationManagerRequestMatcherRegistry
+                                .requestMatchers("/login").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/books").permitAll()
+                                .requestMatchers("/api/books/**").hasRole("LIBRARIAN")
+                                .requestMatchers("/api/books/**").hasRole("ADMIN")
+                                .requestMatchers("/api/users/**").permitAll()
+                                //.requestMatchers("/api/users/**").hasRole("LIBRARIAN")
+                                .requestMatchers(HttpMethod.POST, "/api/loans").hasRole("READER")
+                                .requestMatchers(HttpMethod.GET, "/api/loans").hasRole("READER")
+                                .requestMatchers("/api/loans/**").hasRole("ADMIN")
+                                .requestMatchers("/api/loans/**").hasRole("LIBRARIAN")
+
+
                 )
-                // W konfiguracji nie używamy prefiksu ROLE
+                .sessionManagement(sessionMenegment ->
+                        sessionMenegment.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
                 .build();
     }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
 }
+

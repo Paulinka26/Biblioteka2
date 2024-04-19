@@ -12,6 +12,18 @@ import java.util.List;
 public class LoanController {
     private LoanService loanService;
 
+    public class LoanNotFoundException extends RuntimeException {
+        public LoanNotFoundException(String message) {
+            super(message);
+        }
+    }
+
+    public class LoanAlreadyExistsException extends RuntimeException {
+        public LoanAlreadyExistsException(String message) {
+            super(message);
+        }
+    }
+
     @Autowired
     public LoanController(LoanService loanService) {
         this.loanService = loanService;
@@ -22,18 +34,43 @@ public class LoanController {
         return loanService.getAll();
     }
 
-    @GetMapping("/{loan_id}")
-    public Loan getOne(@PathVariable long loan_id) {
-        return loanService.getOne(loan_id);
+    @GetMapping("/{loanId}")
+    public ResponseEntity<?> getOne(@PathVariable long loanId) {
+        try {
+            Loan loan = loanService.getOne(loanId);
+            return ResponseEntity.ok(loan);
+        } catch (LoanNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Loan not found.");
+        }
     }
+
     @PostMapping
-    public ResponseEntity<Loan> create (@RequestBody Loan loan){
-        var newLoan = loanService.create(loan);
-        return new ResponseEntity<>(newLoan, HttpStatus.CREATED);
+    public ResponseEntity<?> create(@RequestBody Loan loan) {
+        try {
+            Loan newLoan = loanService.create(loan);
+            return new ResponseEntity<>(newLoan, HttpStatus.CREATED);
+        } catch (LoanAlreadyExistsException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Loan already exists.");
+        }
     }
-    @DeleteMapping("/{loan_id}")
-    public ResponseEntity<Void> delete(@PathVariable long loan_id) {
-        loanService.delete(loan_id);
-        return ResponseEntity.noContent().build();
+
+    @DeleteMapping("/{loanId}")
+    public ResponseEntity<Void> delete(@PathVariable long loanId) {
+        try {
+            loanService.delete(loanId);
+            return ResponseEntity.noContent().build();
+        } catch (LoanNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @ExceptionHandler(LoanAlreadyExistsException.class)
+    public ResponseEntity<String> handleLoanAlreadyExistsException(LoanAlreadyExistsException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+    }
+
+    @ExceptionHandler(LoanNotFoundException.class)
+    public ResponseEntity<String> handleLoanNotFoundException(LoanNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 }
