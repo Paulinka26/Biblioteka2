@@ -9,17 +9,24 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+/**
+ * Konfiguracja zabezpieczeń aplikacji.
+ */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
     @Value("${jwt.token.key}")
     private String key;
 
+    /**
+     * Konfiguruje łańcuch filtrów zabezpieczeń.
+     * @param http obiekt konfiguracji zabezpieczeń
+     * @return łańcuch filtrów zabezpieczeń
+     * @throws Exception jeśli wystąpi błąd podczas konfiguracji zabezpieczeń
+     */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
@@ -48,4 +55,3 @@ public class SecurityConfig {
     }
 
 }
-

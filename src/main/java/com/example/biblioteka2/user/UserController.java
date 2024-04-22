@@ -8,21 +8,36 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
+/**
+ * Kontroler obsługujący żądania dotyczące użytkowników w systemie.
+ */
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
     private UserService userService;
 
+    /**
+     * Konstruktor kontrolera użytkowników.
+     * @param userService serwis użytkowników
+     */
     @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
     }
+
+    /**
+     * Wyjątek sygnalizujący, że użytkownik nie został znaleziony.
+     */
     public class UserNotFoundException extends RuntimeException {
         public UserNotFoundException(String message) {
             super(message);
         }
     }
 
+    /**
+     * Obsługuje żądanie pobrania wszystkich użytkowników.
+     * @return lista wszystkich użytkowników
+     */
     @GetMapping
     public List<User> getAllUsers() {
         try {
@@ -32,6 +47,11 @@ public class UserController {
         }
     }
 
+    /**
+     * Obsługuje żądanie pobrania pojedynczego użytkownika na podstawie jego identyfikatora.
+     * @param userId identyfikator użytkownika
+     * @return odpowiedź HTTP z użytkownikiem lub informacją o błędzie
+     */
     @GetMapping("/{userId}")
     public ResponseEntity<?> getOne(@PathVariable long userId) {
         try {
@@ -42,6 +62,11 @@ public class UserController {
         }
     }
 
+    /**
+     * Obsługuje żądanie utworzenia nowego użytkownika.
+     * @param user dane nowego użytkownika
+     * @return odpowiedź HTTP z nowo utworzonym użytkownikiem lub informacją o błędzie
+     */
     @PostMapping
     public ResponseEntity<User> create(@RequestBody User user) {
         try {
@@ -55,6 +80,11 @@ public class UserController {
         }
     }
 
+    /**
+     * Obsługuje żądanie usunięcia użytkownika na podstawie jego identyfikatora.
+     * @param userId identyfikator użytkownika do usunięcia
+     * @return odpowiedź HTTP z informacją o powodzeniu operacji usuwania lub informacją o błędzie
+     */
     @DeleteMapping("/{userId}")
     public ResponseEntity<Void> delete(@PathVariable long userId) {
         try {
