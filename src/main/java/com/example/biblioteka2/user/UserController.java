@@ -8,36 +8,27 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
-/**
- * Kontroler obsługujący żądania dotyczące użytkowników w systemie.
- */
+
 @RestController
 @RequestMapping("/api/users")
+@CrossOrigin(origins = "http://localhost:3000")
 public class UserController {
     private UserService userService;
 
-    /**
-     * Konstruktor kontrolera użytkowników.
-     * @param userService serwis użytkowników
-     */
+
     @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
     }
 
-    /**
-     * Wyjątek sygnalizujący, że użytkownik nie został znaleziony.
-     */
+
     public class UserNotFoundException extends RuntimeException {
         public UserNotFoundException(String message) {
             super(message);
         }
     }
 
-    /**
-     * Obsługuje żądanie pobrania wszystkich użytkowników.
-     * @return lista wszystkich użytkowników
-     */
+
     @GetMapping
     public List<User> getAllUsers() {
         try {
@@ -47,15 +38,11 @@ public class UserController {
         }
     }
 
-    /**
-     * Obsługuje żądanie pobrania pojedynczego użytkownika na podstawie jego identyfikatora.
-     * @param userId identyfikator użytkownika
-     * @return odpowiedź HTTP z użytkownikiem lub informacją o błędzie
-     */
+
     @GetMapping("/{userId}")
-    public ResponseEntity<?> getOne(@PathVariable long userId) {
+    public ResponseEntity<?> getUserId(@PathVariable long userId) {
         try {
-            User user = userService.getOne(userId);
+            User user = userService.getUserId(userId);
             return ResponseEntity.ok(user);
         } catch (UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found with id: " + userId);
