@@ -14,19 +14,18 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
-    private long userId; // Identyfikator użytkownika
+    private long userId;
 
     @Basic
     @Column(name = "email")
-    private String email; // Adres email użytkownika
+    private String email;
 
     @Basic
     @Column(name = "full_name")
-    private String fullName; // Pełne imię i nazwisko użytkownika
-
+    private String fullName;
     @Column(name = "username", unique = true, nullable = false)
     @Basic
-    private String username; // Nazwa użytkownika (unikalna)
+    private String username;
 
     @Column(name = "password", nullable = false)
     @JsonIgnore

@@ -49,11 +49,7 @@ public class UserController {
         }
     }
 
-    /**
-     * Obsługuje żądanie utworzenia nowego użytkownika.
-     * @param user dane nowego użytkownika
-     * @return odpowiedź HTTP z nowo utworzonym użytkownikiem lub informacją o błędzie
-     */
+
     @PostMapping
     public ResponseEntity<User> create(@RequestBody User user) {
         try {
@@ -67,11 +63,7 @@ public class UserController {
         }
     }
 
-    /**
-     * Obsługuje żądanie usunięcia użytkownika na podstawie jego identyfikatora.
-     * @param userId identyfikator użytkownika do usunięcia
-     * @return odpowiedź HTTP z informacją o powodzeniu operacji usuwania lub informacją o błędzie
-     */
+
     @DeleteMapping("/{userId}")
     public ResponseEntity<Void> delete(@PathVariable long userId) {
         try {

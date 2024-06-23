@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -29,15 +28,22 @@ public class SecurityConfig {
                         authorizationManagerRequestMatcherRegistry
                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                                 .requestMatchers("/login").permitAll()
-                                .requestMatchers("/api/users").permitAll()
-                                .requestMatchers("/api/users/**").permitAll()
-                                .requestMatchers("/api/loans").permitAll()
-                                .requestMatchers("/api/loans/**").permitAll()
-                                .requestMatchers("/api/books").permitAll()
-                                .requestMatchers("/api/books/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/books/**").hasAnyRole("ADMIN", "LIBRARIAN", "READER")
+                                .requestMatchers(HttpMethod.GET, "/api/loans/**").hasAnyRole("ADMIN", "LIBRARIAN", "READER")
+                                .requestMatchers(HttpMethod.POST, "/api/books/**").hasAnyRole("ADMIN", "LIBRARIAN")
+                                .requestMatchers(HttpMethod.PUT, "/api/books/**").hasAnyRole("ADMIN", "LIBRARIAN")
+                                .requestMatchers(HttpMethod.DELETE, "/api/books/**").hasAnyRole("ADMIN", "LIBRARIAN")
+                                .requestMatchers(HttpMethod.POST, "/api/loans/**").hasAnyRole("ADMIN", "LIBRARIAN")
+                                .requestMatchers(HttpMethod.PUT, "/api/loans/**").hasAnyRole("ADMIN", "LIBRARIAN")
+                                .requestMatchers(HttpMethod.DELETE, "/api/loans/**").hasAnyRole("ADMIN", "LIBRARIAN")
+                                .requestMatchers(HttpMethod.GET, "/api/users/**").hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.POST, "/api/users/**").hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.PUT, "/api/users/**").hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.DELETE, "/api/users/**").hasRole("ADMIN")
                                 .anyRequest().authenticated()
-
                 )
+
+
                 .sessionManagement(sessionMenegment ->
                         sessionMenegment.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 

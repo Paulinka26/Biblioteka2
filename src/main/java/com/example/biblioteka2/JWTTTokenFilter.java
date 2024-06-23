@@ -27,25 +27,29 @@ public class JWTTTokenFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (authHeader!= null && authHeader.startsWith("Bearer ")) {
-            String token = authHeader.split(" ")[1];
-            Claims claims = Jwts.parser()
-                    .setSigningKey(key)
-                    .build()
-                    .parseSignedClaims(token)
-                    .getBody();
-            String userId = ((Integer) claims.get("id")).toString();
-            String role = (String) claims.get("userRole");
+        try {
+            String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+            if (authHeader != null && authHeader.startsWith("Bearer")) {
+                String token = authHeader.split(" ")[1];
+                Claims claims = Jwts.parser()
+                        .setSigningKey(key)
+                        .build()
+                        .parseSignedClaims(token)
+                        .getBody();
+                String userId = ((Integer) claims.get("id")).toString();
+                String role = (String) claims.get("userRole");
 
-            Authentication authentication =
-                    new UsernamePasswordAuthenticationToken(userId, null,
-                            List.of(new SimpleGrantedAuthority(role)));
-            //Rola użytkowimka powinna by zapisana w bazie ROLE_NAZWA
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-        }else{
+                Authentication authentication =
+                        new UsernamePasswordAuthenticationToken(userId, null,
+                                List.of(new SimpleGrantedAuthority(role)));
+
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            } else {
+                SecurityContextHolder.getContext().setAuthentication(null);
+            }
+        }catch(Exception e){
             SecurityContextHolder.getContext().setAuthentication(null);
         }
-        filterChain.doFilter(request,response); //ZAWSZE MUSI BYC NA KONCU FILTRA
+        filterChain.doFilter(request,response);
     }
 }
